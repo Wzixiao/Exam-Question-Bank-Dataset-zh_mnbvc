@@ -52,8 +52,8 @@ def convert_docx_folder(docx_folder, markdown_folder, image_folder):
 
 # 调用函数进行转换
 
-docx_folder = r'/www/dataset/MNBVC/docx_math' 
-markdown_folder = r'/www/dataset/MNBVC/clear_data'  # 存放.md文件的文件夹路径
-image_folder ="/www/dataset/MNBVC/image_folder"
+docx_folder = './data/docx_other'
+markdown_folder = './data/docx_other_markdown'  # 存放.md文件的文件夹路径
+image_folder = "./data/markdown_image"
 convert_docx_folder(docx_folder, markdown_folder, image_folder)
 
