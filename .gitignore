@@ -5,3 +5,6 @@ data/test*
 dataset
 *.pkl
 .ipynb_checkpoints
+docx*
+answer_markdown
+full_docx
