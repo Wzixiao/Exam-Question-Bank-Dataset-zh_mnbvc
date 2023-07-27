@@ -8,3 +8,4 @@ dataset
 docx*
 answer_markdown
 full_docx
+ __pycache__/
