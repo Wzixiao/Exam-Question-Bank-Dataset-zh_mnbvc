@@ -33,6 +33,7 @@ def extract_and_combine_numbers(str_val):
     """
     match = GET_TOPIC_PATTERN.match(str_val)
 
+    numbers = None
     if match:
         numbers = ''.join(c for c in match[0] if c.isdigit())
     
@@ -267,7 +268,7 @@ def refine_answers(raw_answer_list):
     return refined_answers
 
 
-ANSWERS_KEY_WORDS_IN_QUESTIONS = {"答案"}
+ANSWERS_KEY_WORDS_IN_QUESTIONS = {"答案", "解析"}
 
 
 def split_text_by_keywords(text: str, keywords: list) -> dict:
