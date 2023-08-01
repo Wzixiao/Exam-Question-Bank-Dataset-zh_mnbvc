@@ -1,7 +1,7 @@
 import bisect
 import re
 
-GET_TOPIC_PATTERN = re.compile(r'^(\d+)[．.|(]|^[（(]\d+[）)]|^\\*\d+\\\.|^\d+、')
+GET_TOPIC_PATTERN = re.compile(r'^(\d+)[．.|(]|^(\\*[（(])\d+\\*[）)]|^\\*\d+\\\.|^\d+、')
 
 
 def one_file_per_process(text):
