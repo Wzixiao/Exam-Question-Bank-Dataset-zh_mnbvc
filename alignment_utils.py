@@ -199,6 +199,30 @@ def match_specific_from_end(text, number):
         return None, None, None
 
 
+def match_specific_from_start_by_lines(text, number):
+    '''
+    从文本的末尾开始，匹配特定的数字。
+
+    Args:
+        text (str): 需要匹配的文本。
+        number (int): 需要匹配的数字。
+
+    Returns:
+        tuple: 返回一个元组，包含三个元素。
+               第一个元素是匹配的文本，第二个元素是匹配到的所有文本（包括当前行）。
+               如果没有匹配，返回 (None, None)。
+    '''
+    lines = text.splitlines()
+    number = str(number)
+    pattern = re.compile(f'({number})[．.|\(]|（{number}）|{number}\\.|{number}、')
+    for index, line in enumerate(lines):
+        match = pattern.search(line)
+
+        if match:
+            return "\n".join(lines[:index]), "\n".join(lines[index:])
+
+    return None, None
+
 def refine_answers(raw_answer_list):
     '''
     对一个包含未完全处理好的答案列表进行重新拆分，以使其更为完整。
@@ -268,7 +292,7 @@ def refine_answers(raw_answer_list):
     return refined_answers
 
 
-ANSWERS_KEY_WORDS_IN_QUESTIONS = {"答案", "解析","标准答案","试题分析",""}
+ANSWERS_KEY_WORDS_IN_QUESTIONS = {"答案", "解析", "标准答案", "试题分析", ""}
 
 
 def split_text_by_keywords(text: str, keywords: list) -> dict:
@@ -287,7 +311,7 @@ def split_text_by_keywords(text: str, keywords: list) -> dict:
         # Return the result as a dictionary
         return {
             "question": first_part.strip(),
-            "answer": matched_text+second_part.strip()
+            "answer": matched_text + second_part.strip()
         }
     else:
         # If no match found, return None
@@ -299,16 +323,17 @@ def align_answers_in_questions(questions: list, keywords: list = ANSWERS_KEY_WOR
 
 
 if __name__ == "__main__":
-    test = [
-        '1.下列各数中比小的数是（ ）\nA. B. C. D.\n【答案】A\n【解析】\n【分析】\n先根据正数都大于0，负数都小于0，可排除C、D，再根据两个负数，绝对值大的反而小，可得比-2小的数是-3．\n【详解】∵\\|-3\\|=3，\\|-1\\|=1，\n又0＜1＜2＜3，\n∴-3＜-2，\n所以，所给出的四个数中比-2小的数是-3，\n故选：A\n【点睛】本题考查了有理数的大小比较，其方法如下：（1）负数＜0＜正数；（2）两个负数，绝对值大的反而小．',
-        '2.计算的结果是（ ）\nA. B. C. D.\n【答案】C\n【解析】\n【分析】\n先处理符号，化为同底数幂的除法，再计算即可．\n【详解】解：\n故选C．\n【点睛】本题考查的是乘方符号的处理，考查同底数幂的除法运算，掌握以上知识是解题的关键．',
-        '3.2020的倒数是（）\nA. B. C. D.\n【答案】C\n【解析】\n【分析】\n根据倒数的定义解答.\n【详解】2020的倒数是，\n故选：C.\n【点睛】此题考查倒数的定义，熟记倒数的定义是解题的关键.',
-        '4.下列四个立体图形中，它们各自的三视图都相同的是()\nA. ![](./notebook/image/media/image6.png) B. ![](./notebook/image/media/image7.png) C. ![](./notebook/image/media/image8.png) D. ![](./notebook/image/media/image9.png)\n【答案】A\n【解析】\n【分析】\n根据主视图、左视图、俯视图是分别从物体正面、左面和上面看，所得到的图形解答即可．\n【详解】A、球的三视图都是圆，故本选项正确；\nB、圆锥的主视图和左视图是三角形，俯视图是带有圆心的圆，故本选项错误；\nC、圆柱的主视图和左视图是矩形，俯视图是圆，故本选项错误；\nD、三棱柱的主视图和左视图是矩形，俯视图是三角形，故本选项错误．\n故选A．\n【点睛】本题考查的是几何体的三视图，理解主视图、左视图、俯视图是分别从物体正面、左面和上面看所得到的图形是解题的关键．'
-      ]
-    for row in align_answers_in_questions(test):
-        print()
-        print(row["question"])
-        print("-------------------------------------------------------")
-        print(f"{row['answer']}")
-        print()
-        print("============================================================")
+    test = """5．下列结论正确的是 （ ）',
+ 'A．当 B．',
+ 'C．的最小值为2 D．当无最大值',
+ '![](./notebook/image/media/image22.emf)6．函数的图象如图，其中a、b为常数，则下列结论正确的是 （ ）"""
+
+    # for row in align_answers_in_questions(test):
+    #     print()
+    #     print(row["question"])
+    #     print("-------------------------------------------------------")
+    #     print(f"{row['answer']}")
+    #     print()
+    #     print("============================================================")
+
+    print(match_specific_from_start_by_lines(test, 6))
