@@ -75,7 +75,7 @@ def longest_increasing_subsequence_index(topics):
     return dp[max_index]
 
 
-ANSWER_WORDS = ["答案", "参考答案", "试题解析", "参考解答"]
+ANSWER_WORDS = ["答案", "参考答案", "试题解析", "参考解答", "答"]
 
 
 def find_answer_split_str(all_question):
@@ -268,7 +268,7 @@ def refine_answers(raw_answer_list):
     return refined_answers
 
 
-ANSWERS_KEY_WORDS_IN_QUESTIONS = {"答案", "解析","标准答案","试题分析",""}
+ANSWERS_KEY_WORDS_IN_QUESTIONS = ["标准答案", "试题分析", "答案", "解析", "答", "解"]
 
 
 def split_text_by_keywords(text: str, keywords: list) -> dict:
@@ -276,6 +276,10 @@ def split_text_by_keywords(text: str, keywords: list) -> dict:
     # pattern = r"(【(?:" + "|".join(re.escape(keyword) for keyword in ANSWERS_KEY_WORDS_IN_QUESTIONS) + r")】)"
     pattern = r"【[^】]*】"
     match = re.search(pattern, text)
+
+    if not match:
+        pattern = f"({'|'.join(ANSWERS_KEY_WORDS_IN_QUESTIONS)})"
+        match = re.search(pattern, text)
 
     if match:
         # Get the matched text
