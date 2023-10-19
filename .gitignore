@@ -5,6 +5,7 @@ data/test*
 dataset
 *.pkl
 .ipynb_checkpoints
-
+notebook/docx_images
+notebook/docx_markdowns
 .DS_Store
 __pycache__/
