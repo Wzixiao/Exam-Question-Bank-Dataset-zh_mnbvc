@@ -45,7 +45,7 @@
 
 
 
-4.统计为试卷的文件中是否含有答案
+<!-- 4.统计为试卷的文件中是否含有答案
 
     python 判断是否有答案.py
     output_csv_with_answers = 'rows_with_answers.csv' #含有答案的
@@ -54,5 +54,14 @@
 5.含有答案的试卷进行切分-对齐尝试
 
     python 有答案试卷切分-对齐.py
-     csv_file = 'rows_with_keywords.csv' #结果输出到 rows_with_keywords.csv
+     csv_file = 'rows_with_keywords.csv' #结果输出到 rows_with_keywords.csv -->
 
+4. 试卷拆分
+
+    4.1 检测试卷类型
+       [获取试卷类型](./notebook/get_question_and_answer.ipynb)
+
+    4.2 根据不同类型提取题目
+
+
+5. 不同类型试卷进行对齐
