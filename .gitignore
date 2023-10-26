@@ -9,3 +9,4 @@ notebook/docx_images
 notebook/docx_markdowns
 .DS_Store
 __pycache__/
+docx_markdowns
