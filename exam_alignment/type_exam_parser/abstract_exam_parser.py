@@ -3,6 +3,7 @@ import re
 
 class AbstractExamParser(ABC):
     answer_keywords=["答案"]
+    topic_number_keywords=[".", '．', '、']
 
     def __init__(self, content):
         self.content = content
@@ -89,5 +90,63 @@ class AbstractExamParser(ABC):
             if match: 
                 indexes.append(index)
         return indexes 
+
+    @staticmethod
+    def split_topic_details_content(content, next_topic_number):
+        """
+        根据下一个题目编号，将给定内容分为两部分。
+        
+        参数:
+            content (str): 当前的题目内容
+            next_topic_number (int): 下一个题目的编号
+            
+        返回:
+            tuple: (before_topic_content, after_topic_content)
+        """
+        # 定义匹配题目编号的正则表达式
+        pattern = rf"\d+{'[' + '|'.join(['.', '．', '、']) + ']'}"
+        lines = content.splitlines()
+        
+        before_topic_content = []
+        after_topic_content = []
+        split_flag = False
+        
+        for line in lines:
+            match = re.search(pattern, line)
+            if match:
+                current_topic_number = int(match.group().strip('.').strip('．').strip('、'))
+                if current_topic_number == next_topic_number:
+                    split_flag = True
+
+            if split_flag:
+                after_topic_content.append(line)
+            else:
+                before_topic_content.append(line)
+
+        return "\n".join(before_topic_content), "\n".join(after_topic_content)
     
-  
+    @staticmethod
+    def longest_increasing_subsequence_index(nums):
+        n = len(nums)
+        dp = [[i] for i in range(n)]
+
+        for i in range(n):
+            for j in range(i):
+                if nums[j][0] < nums[i][0]:
+                    if len(dp[j]) + 1 > len(dp[i]) or (len(dp[j]) + 1 == len(dp[i]) and dp[j][-1] == dp[i][-1] - 1):
+                        dp[i] = dp[j] + [i]
+
+        dp = list(filter(lambda lis: nums[lis[0]][1] < len(nums) / 2, dp))
+        dp = sorted(dp, key=lambda lis: len(lis), reverse=True)
+        return [nums[i][1] for i in dp[0]]
+
+    @staticmethod
+    def find_most_concentrated_increasing_subsequence(topic_details):
+        nums = [(detail['topic_number'], idx) for idx, detail in enumerate(topic_details)]
+        
+        # Get the indices of the longest increasing subsequence
+        lis_indices = AbstractExamParser.longest_increasing_subsequence_index(nums)
+
+        # Extract the subsequence from the topic_details using the indices
+        return [topic_details[idx] for idx in lis_indices]
+    
