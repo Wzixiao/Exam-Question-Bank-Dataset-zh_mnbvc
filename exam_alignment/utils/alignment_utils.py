@@ -536,31 +536,3 @@ def find_continuous_sequence(all_question):
         
     # 返回包含连续编号问题序列的新问题列表
     return new_all_question
-
-
-
-
-if __name__ == "__main__":
-    test ="""![](./data/image/media/image10.jpeg)21.如图，一束单色光射入一玻璃球体，入射角为60^o^。己知光线在玻璃球内经一次反射后，再次折射回到空气中时与入射光线平行。此玻璃的折射率为
-A. B.1.5 C. D.2
-【答案】C
-22 . ( 17 分）
-Ⅰ.（9分）一水平放置的圆盘绕过其圆心的竖直轴匀速转动。盘边缘上固定一竖直的挡光片。盘转动时挡光片从一光电数字计时器的光电门的狭缝中经过，如图1所示。图2为光电数字计时器的示意图。光源A中射出的光可照到B中的接收器上。若A、B间的光路被遮断，显示器C上可显示出光线被遮住的时间。
-![](./data/image/media/image13.png) ![](./data/image/media/image13.png)
-![](./data/image/media/image14.png)![](./data/image/media/image15.png)
-挡光片的宽度用螺旋测微器测得,结果如图3 所示。阅盘直径用游标卡尺测得，结果如图4 所示。由图可知，[易考网络](http://www.ekaonet.com/)(www.2008gk.cn)高考试题免费下载
-(1)挡光片的宽度为 [ ]{.underline} mm；
-(2)圈盘的直径为 [ ]{.underline} cm
-(3)若光电数字计时器所显示的时间为50.0ms，则圆盘转动的角速度为 [ ]{.underline} 弧度/秒（保留3 位有效数字）。
-【答案】(1)10.243 (2)24.220 (3)1.69
-Ⅱ.（8分）图为用伏安法测量电阻的原理图。图中，为电压表，内阻为4000Ω；为电流表,内限为50Ω；E为电源，R为电阻箱，R~x~为待测电限,S为开关。
-![](./data/image/media/image16.png)
-(1)当开关闭合后电压表读数U=1.6V,电流表读数I=2.0mA。若将作为测量值，所得结果的百分误差是 [ ]{.underline} 。
-（2）若将电流表改为内接。开关闭合后，重新测得电压表读数和电流表读数，仍将电压表读数与电流表读数之比作为测量值，这时结果的百分误差是 [ ]{.underline} 。
-（）
-【答案】20﹪ 5﹪"""
-    for i in split_question(test):
-        print(i)
-        print()
-    # print(re.search(re.compile(r'(6)\\*[．.]|(\\*[（(])6\\*[）)]|\\*6\\\\.|6、|6[ABCD] |\\[(6)\\]|6（|6【'), test))
-    # print(type_of_judgment(test))
