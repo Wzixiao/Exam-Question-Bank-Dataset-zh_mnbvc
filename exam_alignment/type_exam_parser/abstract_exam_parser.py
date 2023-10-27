@@ -7,8 +7,6 @@ class AbstractExamParser(ABC):
 
     def __init__(self, content):
         self.content = content
-        self.questions = self.extract_questions()
-        self.answers = self.extract_answers() 
 
     @staticmethod
     @abstractmethod
