@@ -9,16 +9,24 @@ class StandardExamParser(AbstractExamParser):
     @staticmethod
     def detect_this_exam_type(content):
         lines = content.splitlines()
-        question_indexes = StandardExamParser.find_all_topic_number(lines)
-        if len(question_indexes) == 0:
+        answer_split_str = StandardExamParser.get_answer_split_str(lines[5:])
+        if answer_split_str is None:
             return False
-        question_number_list = [StandardExamParser.extract_leading_number(lines[question_index]) for question_index in question_indexes]
-        return StandardExamParser.has_equal_subsequences(question_number_list)
+        answer_split_str_index = 0
+        for i in range(len(lines)):
+            if lines[i] == answer_split_str:
+                answer_split_str_index = i
+                break
+        question_list = StandardExamParser.get_all_question_number(lines[:answer_split_str_index])
+        answer_list = StandardExamParser.get_all_question_number(lines[answer_split_str_index:])
+        print(question_list,answer_list)
+        print(question_list == answer_list)
+        return question_list == answer_list
 
     
     def extract_questions(self):
         lines = self.content.splitlines()
-        all_question =  longest_increasing_subsequence_index(StandardExamParser.find_questions_and_answer_indexes(lines))
+        all_question = longest_increasing_subsequence_index(StandardExamParser.find_questions_and_answer_indexes(lines))
         return [lines[question] for question in all_question]
     def extract_topic_details(self):
         topic_numbers_with_content = self.find_all_topic_numbers_with_content()
@@ -36,7 +44,7 @@ class StandardExamParser(AbstractExamParser):
             answer_right_side = joined_questions.split(answer_str, 1)[1]
             answer_number = 1
             while(True):
-                answer = find_answer_by_number(answer_right_side, answer_number)
+                answer, text = find_answer_by_number(answer_right_side, answer_number)
                 if answer is not None:
                     answer_list.append(answer)
                     answer_number = answer_number + 1
@@ -50,24 +58,51 @@ class StandardExamParser(AbstractExamParser):
         pass
     
     @staticmethod
-    def find_answer_by_number(text, number):
+    def get_all_question_number(lines):
+        """
+        传入试卷的每行
+        返回找到的所有题号（题号不在开头也可以）
+        """
+        text = ''.join(lines).replace('\\', '')
+        number = 1
+        number_list = []
+        while(number < 24):
+            line, split_text = StandardExamParser.find_answer_by_number(text, number)
+            if line is None:
+                number = number + 1
+                
+                
+                continue
+            text = split_text
+            number_list.append(number)
+            number = number + 1
+        return number_list
+    
+    @staticmethod
+    def find_answer_by_number(text, number, isAdaptationSymbol=True):
         # 将数字转换为字符串
         number_str = str(number)
         next_number_str = str(number + 1)
 
-        # 构建正则表达式：匹配特定的题号到下一个题号之前的所有内容
-        # 注意这里使用了非贪婪匹配.*?和对下一题号的前瞻(?=\d+\.)
-        pattern = re.compile(rf'({number_str}．).*?(?={next_number_str}．|\Z)', re.DOTALL)
+        # 根据是否适配标点符号选择正则表达式
+        if isAdaptationSymbol:
+            pattern = re.compile(rf'({number_str}[．.]).*?(?={next_number_str}[．.]|\Z)', re.DOTALL)
+        else:
+            pattern = re.compile(rf'({number_str}).*?(?={next_number_str}|\Z)', re.DOTALL)
 
         match = pattern.search(text)
         if match:
             # 匹配到的文本是当前题号到下一个题号之间的内容
             matched_text = match.group(0)
-            # 剩余的文本是从头到当前题号之前的内容
-            rest_text = text[:match.start()]
-            return matched_text
+            # 剩余的文本是匹配到的内容之后的所有文本
+            rest_text = text[match.end():]
+            if rest_text == "":
+                rest_text = text
+            return matched_text, rest_text
 
-        return None
+        # 如果没有匹配，返回None和原始文本
+        return None, text
+
 
     @staticmethod
     def extract_number_from_string(input_string):
@@ -81,21 +116,30 @@ class StandardExamParser(AbstractExamParser):
     @staticmethod
     def get_paper_question_by_number(question_indexes, lines):
         question_list = []
-        answer_words = ["答案", "参考答案", "试题解析", "参考解答"]
         answer_area_str = ""
         for i, question_index in enumerate(question_indexes):
             if i+1 == len(question_indexes):
                 question_list.append("".join(lines[question_indexes[i]:]))
-                for line in lines[question_indexes[i]:]:
-                    if any(answer_word in line for answer_word in answer_words):
-                        answer_area_str = line
-                        break
+                answer_area_str = get_answer_split_str(lines[question_indexes[i]:])
             else:
                 question_list.append("".join(lines[question_index:question_indexes[i+1]]))
 
         return question_list,answer_area_str
+    
+    @staticmethod
+    def get_answer_split_str(lines, answer_words = ["参考答案", "试题解析", "参考解答"]):
+        """
+        传入试卷文本的每一行
+        返回分割的答案区域分割的位置
+        """
+        for line in lines:
+            if any(answer_word in line for answer_word in answer_words):
+                return line
+        return None
+                
     @staticmethod
     def extract_number(s):
+        s = str(s)
         match = re.search(r'(\d+)', s)
         return int(match.group(1)) if match else None
     @staticmethod
@@ -132,7 +176,7 @@ class StandardExamParser(AbstractExamParser):
 
     @staticmethod
     def extract_leading_number(line):
-        match = re.search(r"^\d+[\.|\．|、]", line.replace("\\",""))
+        match = re.search(r"^\d+[\.|\．|、]", line.replaqce("\\",""))
         if match:
             return match.group().rstrip('.').rstrip('．').rstrip('、')
         else:
