@@ -19,15 +19,32 @@ class StandardExamParser(AbstractExamParser):
                 break
         question_list = StandardExamParser.get_all_question_number(lines[:answer_split_str_index])
         answer_list = StandardExamParser.get_all_question_number(lines[answer_split_str_index:])
-        print(question_list,answer_list)
-        print(question_list == answer_list)
         return question_list == answer_list
 
     
     def extract_questions(self):
         lines = self.content.splitlines()
-        all_question = longest_increasing_subsequence_index(StandardExamParser.find_questions_and_answer_indexes(lines))
-        return [lines[question] for question in all_question]
+        answer_split_str = StandardExamParser.get_answer_split_str(lines[5:])
+        answer_split_str_index = 0
+        for i in range(len(lines)):
+            if lines[i] == answer_split_str:
+                answer_split_str_index = i
+                break 
+        question_indexes = self.longest_increasing_subsequence_index(StandardExamParser.find_questions_and_answer_indexes(lines[:answer_split_str_index]))
+        # 提取每个题目的内容
+        questions_content = []
+        lines = lines[:answer_split_str_index]
+        for i, start_index in enumerate(question_indexes):
+            # 如果不是最后一个题目，则结束索引是下一个题目的开始索引
+            # 如果是最后一个题目，则内容一直取到文档的结尾
+            end_index = question_indexes[i + 1] if i + 1 < len(question_indexes) else len(lines)
+            # 提取当前题目的内容，包括起始索引行但不包括结束索引行
+            question_content = lines[start_index:end_index]
+            # 将所有行连接成一个字符串
+            questions_content.append('\n'.join(question_content))
+
+        return questions_content
+    
     def extract_topic_details(self):
         topic_numbers_with_content = self.find_all_topic_numbers_with_content()
         topic_details = self.construct_complete_topic_details(topic_numbers_with_content)
@@ -44,7 +61,7 @@ class StandardExamParser(AbstractExamParser):
             answer_right_side = joined_questions.split(answer_str, 1)[1]
             answer_number = 1
             while(True):
-                answer, text = find_answer_by_number(answer_right_side, answer_number)
+                answer, text = StandardExamParser.find_answer_by_number(answer_right_side, answer_number)
                 if answer is not None:
                     answer_list.append(answer)
                     answer_number = answer_number + 1
@@ -120,7 +137,7 @@ class StandardExamParser(AbstractExamParser):
         for i, question_index in enumerate(question_indexes):
             if i+1 == len(question_indexes):
                 question_list.append("".join(lines[question_indexes[i]:]))
-                answer_area_str = get_answer_split_str(lines[question_indexes[i]:])
+                answer_area_str = StandardExamParser.get_answer_split_str(lines[question_indexes[i]:])
             else:
                 question_list.append("".join(lines[question_index:question_indexes[i+1]]))
 
