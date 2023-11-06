@@ -8,6 +8,10 @@ class StandardExamParser(AbstractExamParser):
     
     @staticmethod
     def detect_this_exam_type(content):
+        """
+        校验试卷类型
+        传入试卷的文本
+        """
         lines = content.splitlines()
         answer_split_str = StandardExamParser.get_answer_split_str(lines[5:])
         if answer_split_str is None:
@@ -23,6 +27,9 @@ class StandardExamParser(AbstractExamParser):
 
     
     def extract_questions(self):
+        """
+        获取试卷题目
+        """
         lines = self.content.splitlines()
         answer_split_str = StandardExamParser.get_answer_split_str(lines[5:])
         answer_split_str_index = 0
@@ -45,13 +52,10 @@ class StandardExamParser(AbstractExamParser):
 
         return questions_content
     
-    def extract_topic_details(self):
-        topic_numbers_with_content = self.find_all_topic_numbers_with_content()
-        topic_details = self.construct_complete_topic_details(topic_numbers_with_content)
-        topic_details = self.find_most_concentrated_increasing_subsequence(topic_details)
-        return topic_details
-    
     def extract_answers(self):
+        """
+        获取试卷答案
+        """
         lines = self.content.splitlines()
         question_list, answer_str = StandardExamParser.find_all_topic_numbers_with_content(lines)
         joined_questions = "".join(question_list[-1]['content'])
@@ -97,6 +101,12 @@ class StandardExamParser(AbstractExamParser):
     
     @staticmethod
     def find_answer_by_number(text, number, isAdaptationSymbol=True):
+        """
+        寻找试卷答案通过题号
+        text: 寻找题目所需文本
+        number: 题目标题(1. 2. 3. 4. 5.)
+        isAdaptationSymbol: 是否适配符号(默认适配 1. 2. 3.  | 不适配的话会寻找 1 2 3 4)
+        """
         # 将数字转换为字符串
         number_str = str(number)
         next_number_str = str(number + 1)
@@ -123,6 +133,9 @@ class StandardExamParser(AbstractExamParser):
 
     @staticmethod
     def extract_number_from_string(input_string):
+        """
+        传入一个字符串寻找number
+        """
         pattern = r"(\d+(\.\d+)*)"  # 匹配一个或多个数字和可选的小数点
         match = re.search(pattern, input_string)
         if match:
@@ -132,6 +145,10 @@ class StandardExamParser(AbstractExamParser):
     
     @staticmethod
     def get_paper_question_by_number(question_indexes, lines):
+        """
+        传入题目的索引下标
+        获取每道题 和 答案分割的字符串
+        """
         question_list = []
         answer_area_str = ""
         for i, question_index in enumerate(question_indexes):
@@ -153,61 +170,6 @@ class StandardExamParser(AbstractExamParser):
             if any(answer_word in line for answer_word in answer_words):
                 return line
         return None
-                
-    @staticmethod
-    def extract_number(s):
-        s = str(s)
-        match = re.search(r'(\d+)', s)
-        return int(match.group(1)) if match else None
-    @staticmethod
-    def has_equal_subsequences(lst):
-        def get_subsequences(lst):
-            subs = []
-            temp = [lst[0]]
-
-            i = 1
-            while i < len(lst):
-                expected_next = str(StandardExamParser.extract_number(temp[-1]) + 1)
-                if lst[i] == expected_next:  # Continuation found
-                    temp.append(lst[i])
-                    i += 1
-                else:  # Not continuous, but check if the next expected is coming up later
-                    if expected_next in lst[i:i+5]:  # Look ahead up to 5 elements to find the next continuation
-                        next_index = lst[i:i+5].index(expected_next) + i
-                        temp.append(lst[next_index])
-                        i = next_index + 1
-                    else:  # No continuation found soon enough, so reset
-                        subs.append(temp)
-                        temp = [lst[i]]
-                        i += 1
-            if temp:
-                subs.append(temp)
-
-            subs.sort(key=len, reverse=True)
-            return subs
-
-        subsequences = get_subsequences(lst)
-        if len(subsequences) != 2:
-            return False
-        return subsequences[0]==subsequences[1]
-
-    @staticmethod
-    def extract_leading_number(line):
-        match = re.search(r"^\d+[\.|\．|、]", line.replaqce("\\",""))
-        if match:
-            return match.group().rstrip('.').rstrip('．').rstrip('、')
-        else:
-            return None
-    
-    @staticmethod    
-    def find_all_topic_number(lines: list[str]) -> list[int]:
-        indexes = []
-        pattern = r"^\d+[\.|\．|、]"
-        for index in range(len(lines)):
-            match = re.search(pattern, lines[index].replace("\\",""))
-            if match: 
-                indexes.append(index)
-        return indexes 
 
     @staticmethod
     def find_questions_and_answer_indexes(lines: list[str]) -> list[super]:
