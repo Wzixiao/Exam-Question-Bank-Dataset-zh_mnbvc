@@ -67,6 +67,7 @@ class StandardExamParser(AbstractExamParser):
             while(True):
                 answer, text = StandardExamParser.find_answer_by_number(answer_right_side, answer_number)
                 if answer is not None:
+                    print(answer)
                     answer_list.append(answer)
                     answer_number = answer_number + 1
                 else:
@@ -99,6 +100,7 @@ class StandardExamParser(AbstractExamParser):
             number = number + 1
         return number_list
     
+
     @staticmethod
     def find_answer_by_number(text, number, isAdaptationSymbol=True):
         """
@@ -113,9 +115,11 @@ class StandardExamParser(AbstractExamParser):
 
         # 根据是否适配标点符号选择正则表达式
         if isAdaptationSymbol:
-            pattern = re.compile(rf'({number_str}[．.]).*?(?={next_number_str}[．.]|\Z)', re.DOTALL)
+            # 适配符号，同时确保不是.png文件名的一部分
+            pattern = re.compile(rf'({number_str}(?!\.png)[．.]).*?(?={next_number_str}[．.]|\Z)', re.DOTALL)
         else:
-            pattern = re.compile(rf'({number_str}).*?(?={next_number_str}|\Z)', re.DOTALL)
+            # 不适配符号，同时确保不是.png文件名的一部分
+            pattern = re.compile(rf'({number_str}(?!\.png)\b).*?(?={next_number_str}\b|\Z)', re.DOTALL)
 
         match = pattern.search(text)
         if match:
@@ -129,6 +133,8 @@ class StandardExamParser(AbstractExamParser):
 
         # 如果没有匹配，返回None和原始文本
         return None, text
+
+
 
 
     @staticmethod
@@ -195,7 +201,7 @@ class StandardExamParser(AbstractExamParser):
         获取标准试卷答案区
         返回每题答案的集合
         """
-        question_number_indexs = longest_increasing_subsequence_index(StandardExamParser.find_questions_and_answer_indexes(lines))
+        question_number_indexs = AbstractExamParser.longest_increasing_subsequence_index(StandardExamParser.find_questions_and_answer_indexes(lines))
         question_list,answer_area_str = StandardExamParser.get_paper_question_by_number(question_number_indexs, lines)
         new_question_list = []
         for question in question_list:
