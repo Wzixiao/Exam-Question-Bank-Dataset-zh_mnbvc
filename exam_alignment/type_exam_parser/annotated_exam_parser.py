@@ -8,11 +8,12 @@ class AnnotatedExamParser(AbstractExamParser):
     @staticmethod
     def detect_this_exam_type(content: str):
         lines = content.splitlines()
+        if len(lines) < 10:
+            return False
         answer_count = AbstractExamParser.answer_count_total(lines)
         question_indexes = AbstractExamParser.find_questions_and_answer_indexes(lines)
         return answer_count > len(question_indexes) / 2
 
-    
     def extract_questions(self):
         topic_details = self.extract_topic_details()
         return [topic_detail["content"] for topic_detail in topic_details]
@@ -21,12 +22,14 @@ class AnnotatedExamParser(AbstractExamParser):
     def extract_topic_details(self):
         topic_numbers_with_content = self.find_all_topic_numbers_with_content()
         topic_details = self.construct_complete_topic_details(topic_numbers_with_content)
+
         topic_details = self.find_most_concentrated_increasing_subsequence(topic_details)
         return topic_details
 
     
     def extract_answers(self):
-        pass
+        topic_details = self.extract_topic_details()
+        return [AnnotatedExamParser.split_question_with_answer(topic_detail["content"])["answer"] for topic_detail in topic_details]
 
     
     def align(self):
@@ -53,7 +56,6 @@ class AnnotatedExamParser(AbstractExamParser):
         answer = "\n".join(answer_lines)
         return {"question": question, "answer": answer}
         
-
     def find_all_topic_numbers_with_content(self, lines=None):
         """
         根据给定的文本行列表，提取出所有的题目序号及其对应的文本内容。
@@ -70,15 +72,14 @@ class AnnotatedExamParser(AbstractExamParser):
         """
         if not lines:
             lines = self.content.splitlines()
-    
-        pattern = rf"^\d+{'[' + '|'.join(self.topic_number_keywords) + ']'}"
- 
+        pattern = rf"^\d+{'[' + '|'.join(self.topic_number_keywords) + '](?!png)'}"
         topic_details = []
         start_index = None
         topic_number = None
 
         for index, line in enumerate(lines):
-            match = re.match(pattern, line)
+
+            match = re.match(pattern, line.replace("\\",""))
             if match:
                 if start_index is not None:
                     topic_details.append({"topic_number": topic_number, "content": '\n'.join(lines[start_index:index])})
@@ -87,7 +88,6 @@ class AnnotatedExamParser(AbstractExamParser):
 
         if start_index is not None:
             topic_details.append({"topic_number": topic_number, "content": '\n'.join(lines[start_index:])})
-
         return self.construct_complete_topic_details(topic_details)
     
     @staticmethod

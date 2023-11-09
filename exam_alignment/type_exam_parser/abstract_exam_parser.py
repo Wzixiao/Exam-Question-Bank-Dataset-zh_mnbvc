@@ -136,7 +136,6 @@ class AbstractExamParser(ABC):
     @staticmethod
     def find_most_concentrated_increasing_subsequence(topic_details):
         nums = [(detail['topic_number'], idx) for idx, detail in enumerate(topic_details)]
-        
         # Get the indices of the longest increasing subsequence
         lis_indices = AbstractExamParser.longest_increasing_subsequence_index(nums)
 
