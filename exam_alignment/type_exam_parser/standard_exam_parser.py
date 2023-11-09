@@ -74,10 +74,6 @@ class StandardExamParser(AbstractExamParser):
                     return answer_list
         else:
             return []
-        
- 
-    def align(self):
-        pass
     
     @staticmethod
     def get_all_question_number(lines):
