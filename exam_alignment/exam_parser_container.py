@@ -7,9 +7,9 @@ from .type_exam_parser.split_exam_parser import SplitExamParser
 class ExamParserContainer():
     def __init__(self, content):
         self.content = content
-        self.parser = self._get_exam_parser()
+        self.parser = self.get_exam_parser()
 
-    def _get_exam_parser(self):
+    def get_exam_parser(self):
         if not AbstractExamParser.check_contains_answers(self.content):
             return None
 
@@ -32,8 +32,4 @@ class ExamParserContainer():
     
     def align(self):
         return self.parser.align()
-
-    def detect_this_exam_type():
-        """此类不实现此函数"""
-        raise NotImplementedError()
     
