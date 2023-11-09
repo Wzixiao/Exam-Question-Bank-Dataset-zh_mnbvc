@@ -46,8 +46,10 @@
 
 4. 试卷对齐
 
+流程:
 - 1. 检测试卷是否包含答案
 - 2. 对齐
+
     usage: extract_and_align_exam.py [-h] --input_dir INPUT_DIR --output_file OUTPUT_FILE
 
     options:
