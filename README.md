@@ -44,24 +44,22 @@
     output_csv_without_keywords = 'rows_without_keywords.csv' # 保存不含关键字的行到新的CSV文件
 
 
+4. 试卷对齐
 
-<!-- 4.统计为试卷的文件中是否含有答案
+流程:
+- 1. 检测试卷是否包含答案
+- 2. 对齐
 
-    python 判断是否有答案.py
-    output_csv_with_answers = 'rows_with_answers.csv' #含有答案的
-    output_csv_without_answers = 'rows_without_answers.csv' #不含有答案的
+    ```bash
+    usage: extract_and_align_exam.py [-h] --input_dir INPUT_DIR --output_file OUTPUT_FILE
 
-5.含有答案的试卷进行切分-对齐尝试
+    options:
+        --input_dir INPUT_DIR
+                                输入目录, 包含md文档的文件夹
+        --output_file OUTPUT_FILE
+                                输出文件, jsonl格式
 
-    python 有答案试卷切分-对齐.py
-     csv_file = 'rows_with_keywords.csv' #结果输出到 rows_with_keywords.csv -->
+    example:
+        python extract_and_align_exam.py --input_dir='./docx_markdowns' --output_file='./algnment.jsonl'
+    ```
 
-4. 试卷拆分
-
-    4.1 检测试卷类型
-       [获取试卷类型](./notebook/get_question_and_answer.ipynb)
-
-    4.2 根据不同类型提取题目
-
-
-5. 不同类型试卷进行对齐

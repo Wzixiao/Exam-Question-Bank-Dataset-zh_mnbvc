@@ -42,7 +42,7 @@ class AnnotatedExamParser(AbstractExamParser):
         is_answer = False
         
         for line in lines:
-            if any(label in line for label in self.answer_keywords):
+            if any(label in line for label in AnnotatedExamParser.answer_keywords):
                 is_answer = True
             if is_answer:
                 answer_lines.append(line.strip())
@@ -90,4 +90,49 @@ class AnnotatedExamParser(AbstractExamParser):
 
         return self.construct_complete_topic_details(topic_details)
     
-    
+    @staticmethod
+    def construct_complete_topic_details(topic_details):
+        """
+        根据题目详情列表构建完整的题目详情列表，处理非连续的题目编号。
+        
+        参数:
+            topic_details (list): 原始题目详情列表
+            
+        返回:
+            list: 完整的题目详情列表
+        """
+        complete_topic_details = []
+
+        for index, detail in enumerate(topic_details):
+            topic_number = detail["topic_number"]
+            content = detail["content"]
+
+            # 如果是最后一个元素
+            if index == len(topic_details) - 1:
+                complete_topic_details.append(detail)
+                break
+
+            next_topic_number = topic_details[index+1]["topic_number"]
+
+            # 处理连续的题目编号
+            if topic_number + 1 == next_topic_number:
+                complete_topic_details.append(detail)
+                continue
+
+            # 处理非连续的题目编号
+            while topic_number < next_topic_number:
+                # 分割当前内容
+                before_topic_content, after_topic_content = AbstractExamParser.split_topic_details_content(content, topic_number + 1)
+
+                # 将当前题目内容添加到完整列表中
+                complete_topic_details.append({"topic_number": topic_number, "content": before_topic_content})
+
+                # 如果后续没有内容，则退出循环
+                if not after_topic_content:
+                    break
+
+                # 否则，增加题目编号并设置下一次迭代的内容
+                topic_number += 1
+                content = after_topic_content
+
+        return complete_topic_details

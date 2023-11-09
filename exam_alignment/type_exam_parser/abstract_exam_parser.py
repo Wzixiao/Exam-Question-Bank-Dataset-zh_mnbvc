@@ -51,9 +51,6 @@ class AbstractExamParser(ABC):
         对齐试卷的题目和答案。
         
         此方法应该确保每个题目与其对应的答案正确对齐，以便于阅卷或其他处理。
-        
-        返回:
-            None
         """
         pass
     
