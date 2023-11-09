@@ -50,15 +50,16 @@
 - 1. 检测试卷是否包含答案
 - 2. 对齐
 
+    ```bash
     usage: extract_and_align_exam.py [-h] --input_dir INPUT_DIR --output_file OUTPUT_FILE
 
     options:
-    -h, --help            show this help message and exit
-    --input_dir INPUT_DIR
-                            输入目录, 包含md文档的文件夹
-    --output_file OUTPUT_FILE
-                            输出文件, jsonl格式
+        --input_dir INPUT_DIR
+                                输入目录, 包含md文档的文件夹
+        --output_file OUTPUT_FILE
+                                输出文件, jsonl格式
 
     example:
-        ```python extract_and_align_exam.py --input_dir='./docx_markdowns' --output_file='./algnment.jsonl'```
+        python extract_and_align_exam.py --input_dir='./docx_markdowns' --output_file='./algnment.jsonl'
+    ```
 
